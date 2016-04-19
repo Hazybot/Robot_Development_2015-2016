@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-Wall -g -pthread -DDEBUG
-EFLAGS=
+CFLAGS=-Wall -g -DDEBUG
+EFLAGS=-pthread
 
 srcExt=.c
 headerExt=.h
