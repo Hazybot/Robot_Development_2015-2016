@@ -1,3 +1,8 @@
+#include "Arduino.h"
+
+void setup();
+void loop();
+
 int leftMotor = 6;
 int rightMotor = 7;
 
