@@ -17,6 +17,7 @@ int openArduino(int* arduino, int nb){
 			tempArduino[success] = file;
 			success++;
 		}
+		free(port);
 	}
 
 	if(i >= 10){
@@ -29,6 +30,13 @@ int openArduino(int* arduino, int nb){
 	}
 
 	return 0;
+}
+
+void closeArduino(int* arduino, int nb){
+	int i;
+	for(i = 0; i < nb; i++){
+		close(arduino[i]);
+	}
 }
 
 char* readInfo(int arduino, int size){
@@ -85,8 +93,12 @@ void* launchSerialLoop(void* data_void){
 	#endif
 
 	while(!data->stopped){
-		buildDistanceSensor(readInfo(0, NB_DISTANCE_SENSOR*6), data->distances, NB_DISTANCE_SENSOR);
-		writeInfo(1, createMotorString(data->speeds, NB_MOTOR));
+		char* info_r = readInfo(0, NB_DISTANCE_SENSOR*6);
+		char* info_w = createMotorString(data->speeds, NB_MOTOR);
+		buildDistanceSensor(info_r, data->distances, NB_DISTANCE_SENSOR);
+		writeInfo(1, info_w);
+		free(info_r);
+		free(info_w);
 		usleep(500000);
 	}
 

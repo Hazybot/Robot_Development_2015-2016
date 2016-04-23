@@ -14,6 +14,7 @@
 #include "../data/Data.h"
 
 int openArduino(int* arduino, int nb);
+void closeArduino(int* arduino, int nb);
 
 char* readInfo(int arduino, int size);
 void writeInfo(int arduino, char* msg);
