@@ -1,11 +1,14 @@
 #include "Data.h"
 
 Data* initialiseData(){
-	Data* data = malloc(sizeof(Data));
-	data->distances = malloc(NB_DISTANCE_SENSOR*sizeof(float));
-	data->speeds = malloc(NB_MOTOR*sizeof(float));
+	Data* data = (Data*) malloc(sizeof(Data));
+	data->distances = (float*) calloc(NB_DISTANCE_SENSOR, sizeof(float));
+	data->speeds = (float*) calloc(NB_MOTOR, sizeof(float));
 
 	data->stopped = false;
+
+	data->arduino = (int*) calloc(NB_ARDUINO, sizeof(int));
+
 	return data;
 }
 

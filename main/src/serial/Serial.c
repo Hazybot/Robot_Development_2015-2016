@@ -1,7 +1,38 @@
 #include "Serial.h"
 
+int openArduino(int* arduino, int nb){
+	char* name = "/dev/ttyACM";
+	int* tempArduino = calloc(nb, sizeof(int));
+	int i;
+	int success = 0;
+	for(i = 0; (i < 10) && (success < nb); i++){
+		int file;
+		char* port = (char*) calloc(strlen(name)+1, sizeof(char));
+		sprintf(port, "%s%d", name, i);
+		file = open(port, O_RDWR);
+		if(file != -1){
+			#ifdef DEBUG
+				printf("Ouverture du port %s\n", port);
+			#endif
+			tempArduino[success] = file;
+			success++;
+		}
+	}
+
+	if(i >= 10){
+		printf("Can't open arduino\n");
+		return -1;
+	}
+
+	for(i = 0; i < nb; i++){
+		arduino[i] = tempArduino[i];
+	}
+
+	return 0;
+}
+
 char* readInfo(int arduino, int size){
-	char* result = (char*) calloc(size, sizeof(char));
+	char* result = (char*) calloc(size+1, sizeof(char));
 	strcat(result, "10:10:10:10:10");
 
 	#ifdef DEBUG
@@ -28,8 +59,8 @@ void buildDistanceSensor(char* info, float* distances, int size){
 
 char* createMotorString(float* speeds, int size){
 	int i;
-	char* result = (char*) calloc(size*6-1, sizeof(char));
-	char* oneSpeed = (char*) calloc(6, sizeof(char));
+	char* result = (char*) calloc(size*6, sizeof(char));
+	char* oneSpeed = (char*) calloc(7, sizeof(char));
 	char* delim;
 
 	for(i = 0; i < size; i++){
@@ -54,7 +85,7 @@ void* launchSerialLoop(void* data_void){
 	#endif
 
 	while(!data->stopped){
-		buildDistanceSensor(readInfo(0, NB_DISTANCE_SENSOR*6-1), data->distances, NB_DISTANCE_SENSOR);
+		buildDistanceSensor(readInfo(0, NB_DISTANCE_SENSOR*6), data->distances, NB_DISTANCE_SENSOR);
 		writeInfo(1, createMotorString(data->speeds, NB_MOTOR));
 		usleep(500000);
 	}

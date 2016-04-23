@@ -7,7 +7,13 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "../data/Data.h"
+
+int openArduino(int* arduino, int nb);
 
 char* readInfo(int arduino, int size);
 void writeInfo(int arduino, char* msg);

@@ -1,8 +1,8 @@
 #include "TimeToStop.h"
 
-void* launchTime(void* data_void){
+void* launchTime(void* stopped_void){
 
-	Data* data = (Data*) data_void;
+	bool* stopped = (bool*) stopped_void;
 
 	#ifdef DEBUG
 		printf("Lancement des %d secondes \n", STOP_TIME);
@@ -13,7 +13,7 @@ void* launchTime(void* data_void){
 		printf("Fin des %d secondes\n", STOP_TIME);
 	#endif
 
-	data->stopped = true;
+	*stopped = true;
 
 	pthread_exit(NULL);
 }

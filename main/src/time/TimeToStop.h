@@ -8,8 +8,8 @@
 
 #include "../data/Data.h"
 
-#define STOP_TIME 5
+#define STOP_TIME 1
 
-void* launchTime(void* data_void);
+void* launchTime(void* stopped_void);
 
 #endif

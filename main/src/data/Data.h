@@ -3,10 +3,14 @@
 
 #include <stdlib.h>
 
+#define NB_ARDUINO 2
 #define NB_DISTANCE_SENSOR 5
 #define NB_MOTOR 2
 
 #define DELIM_CHAR ":"
+
+typedef enum ArduinoFunction ArduinoFunction;
+enum ArduinoFunction {SENSOR_ARDUINO, MOTOR_ARDUINO};
 
 typedef enum Motor Motor;
 enum Motor {LEFT_MOTOR, RIGHT_MOTOR};
@@ -20,6 +24,7 @@ enum bool {false=0, true=1};
 typedef struct Data Data;
 struct Data{
 	bool stopped;
+	int* arduino;
 	float* distances;
 	float* speeds;
 };

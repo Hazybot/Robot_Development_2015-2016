@@ -9,10 +9,14 @@
 int main(int argc, char** argv){
 
 	Data* data = initialiseData();
+	int test = openArduino(data->arduino, NB_ARDUINO) != 0;
+	if(test != 0){
+		return test;
+	}
 
 	pthread_t loopThread, timeThread, serialThread;
 
-	pthread_create(&timeThread, NULL, launchTime, data);
+	pthread_create(&timeThread, NULL, launchTime, &data->stopped);
 	pthread_create(&loopThread, NULL, launchMainLoop, data);
 	pthread_create(&serialThread, NULL, launchSerialLoop, data);
 
