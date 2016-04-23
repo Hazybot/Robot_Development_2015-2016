@@ -4,7 +4,7 @@
 
 #include "../mainLoop/MainLoop.h"
 #include "../time/TimeToStop.h"
-#include "../serial/Serial.h"
+#include "../serial/SerialTraitment.h"
 
 int main(int argc, char** argv){
 

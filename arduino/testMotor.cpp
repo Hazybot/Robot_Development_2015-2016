@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define DECALAGE 80
+#define DECALAGE 20
 
 void setup();
 void loop();
@@ -16,43 +16,65 @@ int leftMotor = 6;
 void stop(){
 	digitalWrite(rightMotor, LOW);
 	digitalWrite(leftMotor, LOW);
-}
-
-void forward(int time){
-	int tempTime = 0;
-	while(tempTime < time){
-		digitalWrite(rightMotor, HIGH);
-		digitalWrite(leftMotor, HIGH);
-		delay(DECALAGE);
-		digitalWrite(rightMotor, LOW);
-		delay(DECALAGE);
-		tempTime += 2*DECALAGE;
-	}
 	stop();
 }
 
-void turnRight(int time){
+void forward(){
+	digitalWrite(rightMotor, HIGH);
+	digitalWrite(leftMotor, HIGH);
+	delay(DECALAGE);
+	digitalWrite(rightMotor, LOW);
+	delay(DECALAGE);
+	stop();
+}
+
+void turnRight(){
 	digitalWrite(rightMotor, LOW);
 	digitalWrite(leftMotor, HIGH);
-	delay(time);
 	stop();
 }
 
-void turnLeft(int time){
+void turnLeft(){
 	digitalWrite(leftMotor, LOW);
-        digitalWrite(rightMotor, HIGH);
-        delay(time);
-        stop();
+    digitalWrite(rightMotor, HIGH);
+	stop();
 }
 
 void setup() {
-        pinMode(leftMotor, OUTPUT);
-        pinMode(rightMotor, OUTPUT);
+	Serial.begin(9600);
+    pinMode(leftMotor, OUTPUT);
+    pinMode(rightMotor, OUTPUT);
+	stop();
 }
 
 void loop() {
-        turnRight(1000);
-	delay(500);
-	turnLeft(1000);
-	delay(500);
+	if(Serial.available()){
+		char data = '\0';
+		int i = 0;
+		char car = '\0';
+		do{
+			car = Serial.read();
+			if(car != '#' && car != '!'){
+				data = car;
+			}
+		}while(Serial.available() && car != '!');
+
+		switch(data){
+			case 'i':
+				Serial.write('#m!');
+			case 's':
+				stop();
+				break;
+			case 'f':
+				forward();
+				break;
+			case 'r':
+				turnRight();
+				break;
+			case 'l':
+				turnLeft();
+				break;
+		}
+	}
+
 }

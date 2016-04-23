@@ -1,111 +1,96 @@
 #include "Serial.h"
 
-int openArduino(int* arduino, int nb){
-	char* name = "/dev/ttyACM";
-	int* tempArduino = calloc(nb, sizeof(int));
-	int i;
-	int success = 0;
-	for(i = 0; (i < 10) && (success < nb); i++){
-		int file;
-		char* port = (char*) calloc(strlen(name)+1, sizeof(char));
-		sprintf(port, "%s%d", name, i);
-		file = open(port, O_RDWR);
-		if(file != -1){
-			#ifdef DEBUG
-				printf("Ouverture du port %s\n", port);
-			#endif
-			tempArduino[success] = file;
-			success++;
-		}
-		free(port);
-	}
+int open_s(char *name){
 
-	if(i >= 10){
-		closeArduino(tempArduino, nb);
-		printf("Can't open arduino\n");
+	struct termios toptions ;
+	int fd;
+
+	#ifdef DEBUG
+		printf("Open serial : %s\n", name) ;
+	#endif
+
+	if((fd = open(name, O_RDWR))== -1){
+		printf("Error opening %s\n", name);
 		return -1;
 	}
 
-	for(i = 0; i < nb; i++){
-		arduino[i] = tempArduino[i];
+	#ifdef DEBUG
+		printf("wait\n") ;
+	#endif
+
+	usleep(300000) ;
+
+
+	if(tcgetattr(fd, &toptions) == -1){
+		printf("Error getting attribut from  %s\n", name);
+		return -1;
 	}
 
-	return 0;
-}
+	cfsetispeed(&toptions, B9600) ;
+	cfsetospeed(&toptions, B9600) ;
+	toptions.c_cflag &= ~PARENB ;
+	toptions.c_cflag &= ~CSTOPB ;
+	toptions.c_cflag &= ~CSIZE;
+	toptions.c_cflag |= CS8 ;
 
-void closeArduino(int* arduino, int nb){
-	int i;
-	for(i = 0; i < nb; i++){
-		close(arduino[i]);
+	toptions.c_cflag &= ~CRTSCTS;
+
+	if(tcsetattr(fd, TCSANOW, &toptions) == -1){
+		printf("Error setting attribut to %s\n", name);
+		return -1;
 	}
-}
 
-char* readInfo(int arduino, int size){
-	char* result = (char*) calloc(size+1, sizeof(char));
-	strcat(result, "10:10:10:10:10");
+	usleep(300000);
 
 	#ifdef DEBUG
-		printf("Reception de %s de l'arduino %d\n", result, arduino);
+		printf("Serial port open\n") ;
 	#endif
-	return result;
+
+	return fd;
 }
 
-void writeInfo(int arduino, char* msg){
+int close_s(int fd){
 	#ifdef DEBUG
-		printf("Envoie de %s à l'arduino %d\n", msg, arduino);
+		printf("Close serial : %d\n", fd);
 	#endif
+	return close(fd);
 }
 
-void buildDistanceSensor(char* info, float* distances, int size){
+int write_s(int fd, uint8_t *buffer, int nbyte){
 
-	char* new = strtok(info, DELIM_CHAR);
-	int i;
-	for(i = 0; (i < size) && (new != NULL); i++){
-		distances[i] = atoi(new);
-		new = strtok(NULL, DELIM_CHAR);
+	#ifdef DEBUG
+		printf("Envoie de %s à l'arduino %d\n", buffer, fd);
+	#endif
+
+	int val=0;
+	val+= write(fd, "#", 1);
+	val+= write(fd, buffer, nbyte);
+	val+= write(fd, "!", 1);
+
+	return val;
+}
+
+int read_s(int fd, uint8_t *buffer, int nbyte){
+	uint8_t* car = (uint8_t*)malloc(1);
+	if(read(fd,car,0) == -1){
+		printf("Erreur reading file");
+		free(car);
+		return -1;
 	}
-}
-
-char* createMotorString(float* speeds, int size){
-	int i;
-	char* result = (char*) calloc(size*6, sizeof(char));
-	char* oneSpeed = (char*) calloc(7, sizeof(char));
-	char* delim;
-
-	for(i = 0; i < size; i++){
-		if(i == size-1){
-			delim = "";
+	while(*car != '#'){
+		read(fd,car,1);
+	}
+	int cpt=0;
+	while(*car != '!' && cpt < nbyte){
+		if(read(fd, car, 1) == 1){
+			*(buffer + cpt) = *car;
+			cpt++;
 		}
-		else{
-			delim = DELIM_CHAR;
-		}
-		sprintf(oneSpeed, "%06.2f%s", speeds[i], delim);
-		strcat(result, oneSpeed);
 	}
-	return result;
-}
-
-void* launchSerialLoop(void* data_void){
-
-	Data* data = (Data*) data_void;
+	free(car);
 
 	#ifdef DEBUG
-		printf("Lancement de la boucle port-série\n");
+		printf("Reception de %s de l'arduino %d\n", buffer, fd);
 	#endif
-
-	while(!data->stopped){
-		char* info_r = readInfo(0, NB_DISTANCE_SENSOR*6);
-		char* info_w = createMotorString(data->speeds, NB_MOTOR);
-		buildDistanceSensor(info_r, data->distances, NB_DISTANCE_SENSOR);
-		writeInfo(1, info_w);
-		free(info_r);
-		free(info_w);
-		usleep(500000);
-	}
-
-	#ifdef DEBUG
-		printf("Fermeture de la boucle port-série\n");
-	#endif
-
-	pthread_exit(NULL);
+	return 1;
 }

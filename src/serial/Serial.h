@@ -3,25 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <unistd.h>
-#include <string.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <termios.h>
+#include <stdint.h>
 
-#include "../data/Data.h"
-
-int openArduino(int* arduino, int nb);
-void closeArduino(int* arduino, int nb);
-
-char* readInfo(int arduino, int size);
-void writeInfo(int arduino, char* msg);
-
-void buildDistanceSensor(char* info, float* distances, int size);
-char* createMotorString(float* speeds, int size);
-
-void* launchSerialLoop(void* data_void);
+//Serial port function
+int open_s(char* name);
+int read_s(int fd, uint8_t *buffer, int nbyte);
+int write_s(int fd, uint8_t *buffer, int nbyte);
+int close_s(int fd);
 
 #endif
