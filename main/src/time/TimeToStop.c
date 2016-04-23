@@ -5,12 +5,12 @@ void* launchTime(void* data_void){
 	Data* data = (Data*) data_void;
 
 	#ifdef DEBUG
-		printf("Lancement du temps\n");
+		printf("Lancement des %d secondes \n", STOP_TIME);
 	#endif
 
 	sleep(STOP_TIME);
 	#ifdef DEBUG
-		printf("Fin du temps\n");
+		printf("Fin des %d secondes\n", STOP_TIME);
 	#endif
 
 	data->stopped = true;
