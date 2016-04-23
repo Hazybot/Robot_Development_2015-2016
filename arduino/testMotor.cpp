@@ -1,21 +1,58 @@
 #include <Arduino.h>
-#include <AFMotor.h>
+
+#define DECALAGE 80
 
 void setup();
 void loop();
 
-AF_DCMotor motor(2, MOTOR12_2KHZ);
-int rightMotor = 6;
-int leftMotor = 7;
+void stop();
+void forward();
+void turnRight();
+void turnLeft();
+
+int rightMotor = 7;
+int leftMotor = 6;
+
+void stop(){
+	digitalWrite(rightMotor, LOW);
+	digitalWrite(leftMotor, LOW);
+}
+
+void forward(int time){
+	int tempTime = 0;
+	while(tempTime < time){
+		digitalWrite(rightMotor, HIGH);
+		digitalWrite(leftMotor, HIGH);
+		delay(DECALAGE);
+		digitalWrite(rightMotor, LOW);
+		delay(DECALAGE);
+		tempTime += 2*DECALAGE;
+	}
+	stop();
+}
+
+void turnRight(int time){
+	digitalWrite(rightMotor, LOW);
+	digitalWrite(leftMotor, HIGH);
+	delay(time);
+	stop();
+}
+
+void turnLeft(int time){
+	digitalWrite(leftMotor, LOW);
+        digitalWrite(rightMotor, HIGH);
+        delay(time);
+        stop();
+}
 
 void setup() {
-	Serial.begin(9600);
-	motor.setSpeed(200);
-
+        pinMode(leftMotor, OUTPUT);
+        pinMode(rightMotor, OUTPUT);
 }
 
 void loop() {
-    motor.run(FORWARD);
+        turnRight(1000);
 	delay(500);
-	motor.run(BACKWARD);
+	turnLeft(1000);
+	delay(500);
 }
