@@ -1,22 +1,21 @@
 #include <Arduino.h>
-#include <Wire.h>
-
+#include <AFMotor.h>
 
 void setup();
 void loop();
 
+AF_DCMotor motor(2, MOTOR12_2KHZ);
 int rightMotor = 6;
 int leftMotor = 7;
 
 void setup() {
-        pinMode(leftMotor, OUTPUT);
-        pinMode(rightMotor, OUTPUT);
+	Serial.begin(9600);
+	motor.setSpeed(200);
+
 }
 
 void loop() {
-        digitalWrite(leftMotor, HIGH);
-        digitalWrite(rightMotor, HIGH);
-        delay(100);
-        digitalWrite(rightMotor, LOW);
-        delay(100);
+    motor.run(FORWARD);
+	delay(500);
+	motor.run(BACKWARD);
 }
