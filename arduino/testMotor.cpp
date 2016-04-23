@@ -1,10 +1,12 @@
-#include "Arduino.h"
+#include <Arduino.h>
+#include <Wire.h>
+
 
 void setup();
 void loop();
 
-int leftMotor = 6;
-int rightMotor = 7;
+int rightMotor = 6;
+int leftMotor = 7;
 
 void setup() {
         pinMode(leftMotor, OUTPUT);

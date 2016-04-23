@@ -4,7 +4,7 @@ CC_Lib=avr-ar
 CC_EXE=objcopy
 CC_Upload=avrdude
 
-arduinoFolder=/usr/share/arduino/hardware/arduino/cores/arduino
+arduinoFolder=lib
 
 CFLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=22 -I $(arduinoFolder)
 CPPFLAG=-c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=22 -I $(arduinoFolder)
@@ -21,6 +21,7 @@ CoreCPP=$(wildcard $(arduinoFolder)/*.cpp)
 CoreC=$(wildcard $(arduinoFolder)/*.c)
 
 coreDir=core
+binDir=bin
 
 CoreOBJ=$(foreach file, $(CoreCPP:.cpp=.o), $(coreDir)/$(notdir $(file))) $(foreach file, $(CoreC:.c=.o), $(coreDir)/$(notdir $(file)))
 
@@ -36,17 +37,18 @@ upload_ACM1:
 
 build: $(ino).hex
 
-$(ino).hex: $(ino).elf
-	$(CC_EXE) $(EXEFLAGS) $(ino).elf $(ino).hex
+$(ino).hex: $(binDir)/$(ino).elf
+	$(CC_EXE) $(EXEFLAGS) $(binDir)/$(ino).elf $(ino).hex
 
-$(ino).elf: $(ino).o core.a
-	$(CC_C) $(LinkFLAGS) -o $(ino).elf $(ino).o $(libName) $(Link_EFLAGS)
+$(binDir)/$(ino).elf: $(binDir)/$(ino).o $(coreDir)/$(libName)
+	$(CC_C) $(LinkFLAGS) -o $(binDir)/$(ino).elf $(binDir)/$(ino).o $(coreDir)/$(libName) $(Link_EFLAGS)
 
-$(ino).o: $(ino).cpp
-	$(CC_CPP) $(CPPFLAG) -o $(ino).o $(ino).cpp
+$(binDir)/$(ino).o: $(ino).cpp
+	@mkdir $(binDir) -p
+	$(CC_CPP) $(CPPFLAG) -o $(binDir)/$(ino).o $(ino).cpp
 
-core.a: $(CoreOBJ)
-	$(CC_Lib) $(LFLAG) $(libName) $(coreDir)/*.o
+$(coreDir)/$(libName): $(CoreOBJ)
+	$(CC_Lib) $(LFLAG) $(coreDir)/$(libName) $(coreDir)/*.o
 
 $(coreDir)/%o: $(arduinoFolder)/%cpp
 	@mkdir $(coreDir) -p
@@ -57,8 +59,7 @@ $(coreDir)/%o: $(arduinoFolder)/%c
 	$(CC_C) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -rf $(coreDir)
-	rm -f $(ino).o $(ino).elf $(libName)
+	rm -rf $(coreDir) $(binDir)
 
 mrproper: clean
-	rm -f $(EXE)
+	rm -f $(ino).hex
