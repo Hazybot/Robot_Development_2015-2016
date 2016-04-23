@@ -48,6 +48,8 @@ void setup() {
 }
 
 void loop() {
+	Serial.println("aaa");
+	delay(100);
 	if(Serial.available()){
 		char data = '\0';
 		int i = 0;
@@ -61,7 +63,8 @@ void loop() {
 
 		switch(data){
 			case 'i':
-				Serial.write('#m!');
+				Serial.print("#m!");
+				break;
 			case 's':
 				stop();
 				break;

@@ -4,7 +4,7 @@ CC_Lib=avr-ar
 CC_EXE=objcopy
 CC_Upload=avrdude
 
-arduinoFolder=lib
+arduinoFolder=../lib
 
 CFLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=22 -I $(arduinoFolder)
 CPPFLAG=-c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=22 -I $(arduinoFolder)
@@ -15,7 +15,7 @@ EXEFLAGS=-O ihex -R .eeprom
 UploadFLAGS=-v -p m328p -b115200 -c arduino
 
 libName=core.a
-ino=testMotor
+ino=testSensor
 
 CoreCPP=$(wildcard $(arduinoFolder)/*.cpp)
 CoreC=$(wildcard $(arduinoFolder)/*.c)
