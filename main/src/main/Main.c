@@ -24,6 +24,7 @@ int main(int argc, char** argv){
 	pthread_join(timeThread, NULL);
 	pthread_join(serialThread, NULL);
 
+	closeArduino(data->arduino, NB_ARDUINO);
 	freeData(data);
 
 	#ifdef DEBUG

@@ -21,6 +21,7 @@ int openArduino(int* arduino, int nb){
 	}
 
 	if(i >= 10){
+		closeArduino(tempArduino, nb);
 		printf("Can't open arduino\n");
 		return -1;
 	}
