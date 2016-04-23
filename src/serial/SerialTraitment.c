@@ -19,14 +19,33 @@ int openArduino(int* arduino, int nb){
 
 	if(i >= 10){
 		closeArduino(tempArduino, nb);
+		free(tempArduino);
 		printf("Can't open arduino\n");
 		return -1;
 	}
 
 	for(i = 0; i < nb; i++){
+		char* init = calloc(2, sizeof(char));
+		init[0] = 'i';
+		write_s(tempArduino[i], (uint8_t*) init, 1);
+		read(tempArduino[i], init, 1);
+		switch(init[0]){
+			case 'm':
+				arduino[MOTOR_ARDUINO] = tempArduino[i];
+				#ifdef DEBUG
+					printf("Arduino moteur détecté\n");
+				#endif
+				break;
+			case 's':
+				arduino[SENSOR_ARDUINO] = tempArduino[i];
+				#ifdef DEBUG
+					printf("Arduino capteur détecté\n");
+				#endif
+				break;
+		}
 		arduino[i] = tempArduino[i];
 	}
-
+	free(tempArduino);
 	return 0;
 }
 

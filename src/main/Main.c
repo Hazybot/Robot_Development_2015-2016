@@ -11,6 +11,7 @@ int main(int argc, char** argv){
 	Data* data = initialiseData();
 	int test = openArduino(data->arduino, NB_ARDUINO) != 0;
 	if(test != 0){
+		freeData(data);
 		return test;
 	}
 
