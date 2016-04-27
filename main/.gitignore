@@ -1,0 +1,5 @@
+# Under Makefile
+src/**/Makefile
+
+# Bin folder
+bin/
