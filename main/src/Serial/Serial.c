@@ -56,7 +56,7 @@ int close_s(int fd){
 	return close(fd);
 }
 
-int write_s(int fd, uint8_t *buffer, int nbyte){
+int write_s(int fd, char *buffer, int nbyte){
 	int val=0;
 	val+= write(fd, "#", 1);
 	val+= write(fd, buffer, nbyte);
@@ -64,8 +64,8 @@ int write_s(int fd, uint8_t *buffer, int nbyte){
 	return val;
 }
 
-int read_s(int fd, uint8_t *buffer){
-	uint8_t* car = (uint8_t*)malloc(1);
+int read_s(int fd, char *buffer){
+	char* car = (char*)malloc(1);
 	if(read(fd,car,0) == -1){
 		printf("Erreur reading file");
 		free(car);

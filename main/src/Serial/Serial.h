@@ -13,9 +13,9 @@
 
 int open_s(char *name);
 
-int read_s(int fd, uint8_t *buffer);
+int read_s(int fd, char *buffer);
 
-int write_s(int fd, uint8_t *buffer, int nbyte);
+int write_s(int fd, char *buffer, int nbyte);
 
 int close_s(int fd);
 
